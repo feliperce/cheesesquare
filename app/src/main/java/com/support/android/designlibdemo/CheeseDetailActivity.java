@@ -18,7 +18,9 @@ package com.support.android.designlibdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,6 +32,8 @@ import com.bumptech.glide.request.RequestOptions;
 public class CheeseDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_NAME = "cheese_name";
+    private AppBarLayout appbar;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class CheeseDetailActivity extends AppCompatActivity {
         final String cheeseName = intent.getStringExtra(EXTRA_NAME);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
+        appbar = findViewById(R.id.appbar);
+        coordinatorLayout = findViewById(R.id.main_content);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -47,6 +53,14 @@ public class CheeseDetailActivity extends AppCompatActivity {
         collapsingToolbar.setTitle(cheeseName);
 
         loadBackdrop();
+
+        appbar.post(new Runnable() {
+            @Override
+            public void run() {
+                int heightPx = findViewById(R.id.backdrop).getHeight();
+                setAppBarOffset(heightPx/2);
+            }
+        });
     }
 
     private void loadBackdrop() {
@@ -58,5 +72,11 @@ public class CheeseDetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.sample_actions, menu);
         return true;
+    }
+
+    private void setAppBarOffset(int offsetPx){
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) appbar.getLayoutParams();
+        AppBarLayout.Behavior behavior = (AppBarLayout.Behavior) params.getBehavior();
+        behavior.onNestedPreScroll(coordinatorLayout, appbar, null, 0, offsetPx, new int[]{0, 0}, 0);
     }
 }
